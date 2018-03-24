@@ -5,10 +5,8 @@ import home.investigation.rrr.repo.TourPackageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-public class TourPackageServiceImpl implements TService {
+public class TourPackageServiceImpl implements TService<TourPackage> {
 
     private TourPackageRepository tourPackageRepository;
 
@@ -18,8 +16,16 @@ public class TourPackageServiceImpl implements TService {
     }
 
     public TourPackage createTourPackage(String code, String name) {
-        return Optional.ofNullable(tourPackageRepository.findById(code))
-            .orElse(Optional.of(new TourPackage(code, name))).get();
+//        Optional<TourPackage> tourPackage = tourPackageRepository.findById(code);
+//        return tourPackage.map(t -> {
+//                return t;
+//        }).orElse(tourPackageRepository.save(new TourPackage(code, name)));
+        if (!tourPackageRepository.findById(code).isPresent()) {
+            return tourPackageRepository.save(new TourPackage(code, name));
+        } else {
+            return null;
+        }
+
     }
 
     @Override
