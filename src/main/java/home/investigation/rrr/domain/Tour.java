@@ -2,6 +2,7 @@ package home.investigation.rrr.domain;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 @Entity
 @Getter
 @EqualsAndHashCode
+@ToString
 public class Tour implements Serializable{
 
     @Id
@@ -39,7 +41,6 @@ public class Tour implements Serializable{
 
     @Column
     private String keywords;
-
 
     @ManyToOne
     private TourPackage tourPackage;
