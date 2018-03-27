@@ -2,6 +2,8 @@ package home.investigation.rrr.repo;
 
 import home.investigation.rrr.domain.TourRating;
 import home.investigation.rrr.domain.TourRatingPk;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -21,6 +23,8 @@ public interface TourRatingRepository extends CrudRepository<TourRating, TourRat
      * @return a List of any found TourRatings
      */
     List<TourRating> findByPkTourId(Integer tourId);
+
+    Page<TourRating> findByPkTourId(Integer tourId, Pageable pageable);
 
     /**
      * Lookup a TourRating by the TourId and Customer Id

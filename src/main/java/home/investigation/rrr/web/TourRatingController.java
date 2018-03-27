@@ -6,6 +6,9 @@ import home.investigation.rrr.domain.TourRatingPk;
 import home.investigation.rrr.repo.TourRatingRepository;
 import home.investigation.rrr.repo.TourRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,6 +44,10 @@ public class TourRatingController {
     protected TourRatingController() {
     }
 
+    private Function<TourRating, RatingDto> convert() {
+        return tr -> new RatingDto(tr.getScore(), tr.getComment(), tr.getPk().getCustomerId());
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void createTourRating(@PathVariable(value = "tourId") int tourId,
@@ -54,11 +61,15 @@ public class TourRatingController {
     }
 
     @GetMapping
-    public List<RatingDto> getAllRatingsForTour(@PathVariable(value = "tourId") int tourId) {
+    public Page<RatingDto> getAllRatingsForTour(@PathVariable(value = "tourId") int tourId, Pageable pageable) {
            verifyTour(tourId);
-           return tourRatingRepository.findByPkTourId(tourId).stream()
+           Page<TourRating> tourRatingPage = tourRatingRepository.findByPkTourId(tourId, pageable);
+           List<RatingDto> ratingDtoList = tourRatingPage.getContent()
+               .stream()
                .map(this.convert())
                .collect(Collectors.toList());
+
+           return new PageImpl<RatingDto>(ratingDtoList, pageable, tourRatingPage.getTotalPages());
     }
 
     @GetMapping(path = "/average")
@@ -69,10 +80,6 @@ public class TourRatingController {
         return new AbstractMap.SimpleEntry<String, Double>("average",
             average.isPresent() ? average.getAsDouble() : null
         );
-    }
-
-    private Function<TourRating, RatingDto> convert() {
-        return tr -> new RatingDto(tr.getScore(), tr.getComment(), tr.getPk().getCustomerId());
     }
 
     /**
